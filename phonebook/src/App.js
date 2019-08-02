@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
+import Name from './components/Name'
 
-const App = () => {
+const App = (props) => {
   
-  const [ persons, setPersons] = useState(names) 
+  const [ persons, setPersons] = useState(props.names) 
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ searchQuery, setSearchQuery ] = useState('')
@@ -15,6 +16,9 @@ const App = () => {
 	  setNewName('')
   }
   
+  const [showAll, setShowAll] = useState(true)
+  const personsSearched = persons.filter(person => (person.name).toUpperCase().includes(searchQuery.toUpperCase()))
+
   const handleNameChange = (event) => {
 	setNewName(event.target.value)
 	setDupe(true)
@@ -34,7 +38,7 @@ const App = () => {
 	setSearchQuery(event.target.value)
   }
   
-  const rows = () => persons.map(person =>
+  const rows = () => personsSearched.map(person =>
 	<Name
 	  key={person.name}
 	  name={person.name}
@@ -42,12 +46,6 @@ const App = () => {
 	/>
   )
 
-  const Name = ({ name, number }) => {
-	  return (
-		<li>{name}: {number}</li>
-	  )
-  }
-  
   return (
     <div>
       <h2>Phonebook</h2>
@@ -82,16 +80,5 @@ const App = () => {
     </div>
   )
 }
-
-const names = [
-  {
-    name: 'Jeff Smith',
-	number: '571-888-8880'
-  },
-  {
-    name: 'Eric Randall',
-	number: '571-888-6669'
-  }
-]
 
 export default App;
