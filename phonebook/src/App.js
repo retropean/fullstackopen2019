@@ -1,13 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import Name from './components/Name'
 
-const App = (props) => {
+const App = () => {
   
-  const [ persons, setPersons] = useState(props.names) 
+  const [ persons, setPersons] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ searchQuery, setSearchQuery ] = useState('')
   const [ Dupe, setDupe ] = useState(true)
+  
+  useEffect(() => {
+	  console.log('effect')
+	  axios
+		.get('http://localhost:3001/names')
+		.then(response => {
+		  console.log('promise fulfilled')
+		  setPersons(response.data)
+    })
+  }, []) //empty array means useEffect only runs once on render
+  console.log('render', persons.length, 'people')
   
   const addPerson = (event) => {
 	  event.preventDefault()
