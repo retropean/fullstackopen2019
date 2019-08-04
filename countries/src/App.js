@@ -49,7 +49,7 @@ function App() {
 	  ))
   
   const countriesToShow = countries.filter(country => (country.name).toUpperCase().includes(searchQuery.toUpperCase()))
-  
+
   return (
     <div>
 	  <form>
@@ -72,14 +72,18 @@ const Country = ({ country }) => {
     <p>{country.name}</p>
   )
 }
+
 const CountryDetail = ({ country }) => {
+  const countryLang = country.languages.map(language =>
+	<li>{language.name}</li>
+  )
   return (
     <div>
 		<h1>{country.name}</h1>
 		<div>capital {country.capital}</div>
 		<div>population {country.population}</div>
 		<h2>languages</h2>
-		<div>blahblahblah?</div>
+		<div>{countryLang}</div>
 		<img src={country.flag} alt="Country Flag" width="200px"/>
 	</div>
   )
