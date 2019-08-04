@@ -5,6 +5,7 @@ import axios from 'axios'
 function App() {
   const [ countries, setCountries] = useState([])
   const [ searchQuery, setSearchQuery ] = useState('')
+  const [ countriesToShow, setCountriesToShow ] = useState([])
   
   useEffect(() => {
 	  axios
@@ -19,18 +20,9 @@ function App() {
   
   const handleSearch = (event) => {
 	setSearchQuery(event.target.value)
+	setCountriesToShow(countries.filter(country => (country.name).toUpperCase().includes(searchQuery.toUpperCase())))
   }
-/*
-  const rows = () => 
-	  countriesToShow.length > 10 ?
-	  "too many matches, specify another filter":
-	  countriesToShow.map(country =>
-		<Country
-		  key={country.name}
-		  country={country}
-		/>
-	  )
-*/
+  
   const rows = () => 
 	countriesToShow.length === 1 ?
 	 countriesToShow.map(country =>
@@ -41,14 +33,25 @@ function App() {
 	 :
   	 (countriesToShow.length > 10 ?
 	   "too many matches, specify another filter":
-	   countriesToShow.map(country =>
+	   countriesToShow.map((country) => 
 		<Country
 		  key={country.name}
 		  country={country}
 		/>
 	  ))
-  
-  const countriesToShow = countries.filter(country => (country.name).toUpperCase().includes(searchQuery.toUpperCase()))
+
+  const Country = ({ country }) => {
+	  return (
+		<p>
+			{country.name} 
+			<button onClick={() => 
+				setCountriesToShow(countries.filter(searchcountry => (searchcountry.name).toUpperCase().includes(country.name.toUpperCase())))
+			}>
+				show
+			</button>
+		</p>
+	  )
+  }
 
   return (
     <div>
@@ -67,13 +70,18 @@ function App() {
   )
 }
 
-const Country = ({ country }) => {
-  return (
-    <p>{country.name}</p>
-  )
-}
 
 const CountryDetail = ({ country }) => {
+  const [ countryweather, setCountryWeather] = useState([])
+  useEffect(() => {
+		  axios
+			.get('http://api.openweathermap.org/data/2.5/weather?q=London&APPID=6c7b12680555fa5800396f77568c307f')
+			.then(response => {
+			  console.log(response.data)
+			  console.log('data pulled')
+			})
+  }, [])
+  //console.log(countryWeather)
   const countryLang = country.languages.map(language =>
 	<li>{language.name}</li>
   )
@@ -85,6 +93,7 @@ const CountryDetail = ({ country }) => {
 		<h2>languages</h2>
 		<div>{countryLang}</div>
 		<img src={country.flag} alt="Country Flag" width="200px"/>
+		
 	</div>
   )
 }
