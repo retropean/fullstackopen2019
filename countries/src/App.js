@@ -95,7 +95,6 @@ const CountryWeather = ({ country }) => {
   }
 }
 
-
 const CountryDetail = ({ country }) => {
   const countryLang = country.languages.map(language =>
 	<li key={language.name}>{language.name}</li>
