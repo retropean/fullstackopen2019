@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import Name from './components/Name'
+import numberService from './services/numbers'
 
 const App = () => {
   
@@ -11,13 +12,11 @@ const App = () => {
   const [ Dupe, setDupe ] = useState(true)
   
   useEffect(() => {
-	  console.log('effect')
-	  axios
-		.get('http://localhost:3001/names')
-		.then(response => {
-		  console.log('promise fulfilled')
-		  setPersons(response.data)
-    })
+	  numberService
+		  .getAll()
+		  .then(initialNumbers => {
+		  setPersons(initialNumbers)
+      })
   }, []) //empty array means useEffect only runs once on render
   console.log('render', persons.length, 'people')
   
@@ -25,6 +24,12 @@ const App = () => {
 	  event.preventDefault()
 	  const nameObject = {name: newName, number: newNumber}
 	  Dupe ? setPersons(persons.concat(nameObject)) : window.alert(newName + ' is already added to phonebook')
+
+	  numberService
+		  .create(nameObject)
+		  .then(returnedName => {
+			setPersons(persons.concat(returnedName))
+      })
 	  setNewName('')
   }
   
@@ -41,7 +46,38 @@ const App = () => {
 		}
 	  })
   }
-  
+  const del_entryOf = (id) => {
+		if( window.confirm("Do you really want to delete this entry?"))
+		{
+			numberService
+				.del(id)
+				.then(setPersons(persons.filter(person => person.id !== id)))
+		}
+	}
+
+/*  const del_entry = id => {
+	  console.log("datwindow")
+	  const url = `http://localhost:3001/names/${id}`
+	  const person = persons.find(n => n.id === id)
+	  
+	  window.confirm("Do you really want to delete this entry?");
+	  //const changedNote = { ...note, important: !note.important }
+/*	
+/*	
+	  noteService
+		  .update(id, changedNote)
+		  .then(returnedNote => {
+          setNotes(notes.map(note => note.id !== id ? note : returnedNote))
+      })
+	  .catch(error => {
+		  alert(
+			`the note '${note.content}' was already deleted from server`
+		  )
+		  setNotes(notes.filter(n => n.id !== id))
+  	  })
+  }
+*/
+
   const handleNumberChange = (event) => {
 	setNewNumber(event.target.value)
   }
@@ -55,6 +91,7 @@ const App = () => {
 	  key={person.name}
 	  name={person.name}
 	  number={person.number}
+	  del_entry={() => del_entryOf(person.id)}
 	/>
   )
 
