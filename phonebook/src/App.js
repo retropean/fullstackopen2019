@@ -23,14 +23,18 @@ const App = () => {
   const addPerson = (event) => {
 	  event.preventDefault()
 	  const nameObject = {name: newName, number: newNumber}
-	  Dupe ? setPersons(persons.concat(nameObject)) : window.alert(newName + ' is already added to phonebook')
-
-	  numberService
-		  .create(nameObject)
-		  .then(returnedName => {
+      if(Dupe===true)
+	  {
+		  setPersons(persons.concat(nameObject))
+		  numberService
+			.create(nameObject)
+			.then(returnedName => {
 			setPersons(persons.concat(returnedName))
-      })
+			})
+      }			
+	  else window.alert(newName + ' is already added to phonebook')
 	  setNewName('')
+	  setNewNumber('')
   }
   
   const [showAll, setShowAll] = useState(true)
@@ -46,6 +50,7 @@ const App = () => {
 		}
 	  })
   }
+
   const del_entryOf = (id) => {
 		if( window.confirm("Do you really want to delete this entry?"))
 		{
@@ -54,29 +59,6 @@ const App = () => {
 				.then(setPersons(persons.filter(person => person.id !== id)))
 		}
 	}
-
-/*  const del_entry = id => {
-	  console.log("datwindow")
-	  const url = `http://localhost:3001/names/${id}`
-	  const person = persons.find(n => n.id === id)
-	  
-	  window.confirm("Do you really want to delete this entry?");
-	  //const changedNote = { ...note, important: !note.important }
-/*	
-/*	
-	  noteService
-		  .update(id, changedNote)
-		  .then(returnedNote => {
-          setNotes(notes.map(note => note.id !== id ? note : returnedNote))
-      })
-	  .catch(error => {
-		  alert(
-			`the note '${note.content}' was already deleted from server`
-		  )
-		  setNotes(notes.filter(n => n.id !== id))
-  	  })
-  }
-*/
 
   const handleNumberChange = (event) => {
 	setNewNumber(event.target.value)

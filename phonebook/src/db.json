@@ -6,19 +6,24 @@
       "id": 2
     },
     {
-      "name": "Dan Abramov",
-      "number": "12-43-234345",
-      "id": 3
-    },
-    {
-      "name": "Mary Poppendieck",
-      "number": "39-23-6423122",
-      "id": 4
-    },
-    {
       "name": "Eric Randall",
       "number": "571-888-6666",
       "id": 5
+    },
+    {
+      "name": "Jeff Smith",
+      "number": "93-44-2308902",
+      "id": 6
+    },
+    {
+      "name": "Alex Norris",
+      "number": "44-22-2222",
+      "id": 7
+    },
+    {
+      "name": "Erick the Red",
+      "number": "55-2323-2324",
+      "id": 8
     }
   ]
 }
