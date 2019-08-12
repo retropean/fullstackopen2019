@@ -9,7 +9,8 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ searchQuery, setSearchQuery ] = useState('')
-  const [ Dupe, setDupe ] = useState(true)
+  const [ nameDupe, setNameDupe ] = useState(true)
+  const [ numDupe, setNumDupe ] = useState(true)
   
   useEffect(() => {
 	  numberService
@@ -23,7 +24,7 @@ const App = () => {
   const addPerson = (event) => {
 	  event.preventDefault()
 	  const nameObject = {name: newName, number: newNumber}
-      if(Dupe===true)
+      if(nameDupe===true)
 	  {
 		  setPersons(persons.concat(nameObject))
 		  numberService
@@ -31,7 +32,18 @@ const App = () => {
 			.then(returnedName => {
 			setPersons(persons.concat(returnedName))
 			})
-      }			
+      }
+	  else if(nameDupe===false && numDupe ===true)
+	  {
+		if( window.confirm(newName + 'is already added to the phonebook, would you like to replace the old number with a new one?'))
+		{
+			numberService
+				.update((persons.find(n => n.name === newName)).id, nameObject)
+				.then(returnedNote => {
+					setPersons(persons.map(p => p.id !== ((persons.find(n => n.name === newName)).id) ? p : nameObject))
+				})
+		}
+	  }
 	  else window.alert(newName + ' is already added to phonebook')
 	  setNewName('')
 	  setNewNumber('')
@@ -42,15 +54,30 @@ const App = () => {
 
   const handleNameChange = (event) => {
 	setNewName(event.target.value)
-	setDupe(true)
+	setNameDupe(true)
 	persons.forEach(function(item, index, array) {
 		if( item.name === event.target.value)
 		{
-			setDupe(false)
+			setNameDupe(false)
 		}
 	  })
   }
 
+  const handleNumberChange = (event) => {
+	setNewNumber(event.target.value)
+	setNumDupe(true)
+	persons.forEach(function(item, index, array) {
+		if( item.number === event.target.value)
+		{
+			setNumDupe(false)
+		}
+	})
+  }
+  
+  const handleSearch = (event) => {
+	setSearchQuery(event.target.value)
+  }
+  
   const del_entryOf = (id) => {
 		if( window.confirm("Do you really want to delete this entry?"))
 		{
@@ -60,14 +87,6 @@ const App = () => {
 		}
 	}
 
-  const handleNumberChange = (event) => {
-	setNewNumber(event.target.value)
-  }
-  
-  const handleSearch = (event) => {
-	setSearchQuery(event.target.value)
-  }
-  
   const rows = () => personsSearched.map(person =>
 	<Name
 	  key={person.name}
