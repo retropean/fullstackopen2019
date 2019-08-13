@@ -85,12 +85,20 @@ const App = () => {
 	setSearchQuery(event.target.value)
   }
   
-  const del_entryOf = (id) => {
+  const del_entryOf = (id, name) => {
 		if( window.confirm("Do you really want to delete this entry?"))
 		{
 			numberService
 				.del(id)
 				.then(setPersons(persons.filter(person => person.id !== id)))
+			.catch(error => {
+				setStatusMessage(
+					name + ` has already been removed from the server`
+				)
+			    setTimeout(() => {
+				  setStatusMessage(null)
+				}, 5000)
+			})
 		}
 	}
 
@@ -99,7 +107,7 @@ const App = () => {
 	  key={person.name}
 	  name={person.name}
 	  number={person.number}
-	  del_entry={() => del_entryOf(person.id)}
+	  del_entry={() => del_entryOf(person.id, person.name)}
 	/>
   )
 
@@ -151,7 +159,7 @@ const Notification = ({ message }) => {
 		</div>
 	)
   }
-  if (message === 'error')
+  if (message.includes('server'))
   {
 	return (
 		<div className="error">
