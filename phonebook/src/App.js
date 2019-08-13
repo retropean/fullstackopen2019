@@ -11,6 +11,7 @@ const App = () => {
   const [ searchQuery, setSearchQuery ] = useState('')
   const [ nameDupe, setNameDupe ] = useState(true)
   const [ numDupe, setNumDupe ] = useState(true)
+  const [statusMessage, setStatusMessage] = useState(null)
   
   useEffect(() => {
 	  numberService
@@ -32,6 +33,12 @@ const App = () => {
 			.then(returnedName => {
 			setPersons(persons.concat(returnedName))
 			})
+		  setStatusMessage(
+			`Added ` + newName
+			)
+		  setTimeout(() => {
+			  setStatusMessage(null)
+		  }, 5000)
       }
 	  else if(nameDupe===false && numDupe ===true)
 	  {
@@ -99,6 +106,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+	  <Notification message={statusMessage} />
 	  <form>
 		<div>
 		  filter shown with <input 
@@ -129,6 +137,28 @@ const App = () => {
       {rows()}
     </div>
   )
+}
+
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+  if (message.includes('Added'))
+  {
+	return (
+		<div className="ok">
+			{message}
+		</div>
+	)
+  }
+  if (message === 'error')
+  {
+	return (
+		<div className="error">
+			{message}
+		</div>
+	)
+  }
 }
 
 export default App;
