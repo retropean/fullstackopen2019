@@ -67,7 +67,7 @@ const App = () => {
 		{
 			setNameDupe(false)
 		}
-	  })
+	})
   }
 
   const handleNumberChange = (event) => {
