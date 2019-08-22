@@ -2,34 +2,22 @@ const express = require('express')
 const app = express()
 const morgan = require('morgan')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 
+app.use(express.static('build'))
+app.use(cors())
 app.use(bodyParser.json())
-
-/*
-const requestLogger = (request, response, next) => {
-  console.log('Method:', request.method)
-  console.log('Path:  ', request.path)
-  console.log('Body:  ', request.body)
-  console.log('---')
-  next()
-}
-app.use(requestLogger)
-*/
 
 app.use(morgan(
  function (tokens, req, res) {
-//  if(tokens.method(req, res) = POST)
-//else{
-	  return [
-		tokens.method(req, res),
-		tokens.url(req, res),
-		//JSON.stringify(req),
-		tokens.status(req, res),
-		tokens.res(req, res, 'content-length'), '-',
-		tokens['response-time'](req, res), 'ms',
-		JSON.stringify(req.body)
-	  ].join(' ')
-//  }
+  return [
+	tokens.method(req, res),
+	tokens.url(req, res),
+	tokens.status(req, res),
+	tokens.res(req, res, 'content-length'), '-',
+	tokens['response-time'](req, res), 'ms',
+	JSON.stringify(req.body)
+  ].join(' ')
  }))
 
 let names = [
@@ -90,13 +78,6 @@ const generateId = () => {
   return maxId + 1
 }
 
-/*
-const generateid = () => {
-  const maxId = Math.random()
-  return maxId * 70000
-}
-*/
-
 app.post('/api/persons', (request, response) => {
   const body = request.body
   //return 400 bad request if content missing
@@ -131,7 +112,8 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint)
 
-const PORT = 3001
+//const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
