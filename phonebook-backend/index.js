@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const morgan = require('morgan')
+//const morgan = require('morgan')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 
@@ -8,6 +8,7 @@ app.use(express.static('build'))
 app.use(cors())
 app.use(bodyParser.json())
 
+/*
 app.use(morgan(
  function (tokens, req, res) {
   return [
@@ -19,6 +20,7 @@ app.use(morgan(
 	JSON.stringify(req.body)
   ].join(' ')
  }))
+*/
 
 let names = [
 	{
