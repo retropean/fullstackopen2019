@@ -3,6 +3,7 @@ const app = express()
 //const morgan = require('morgan')
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const Name = require('./models/name')
 
 app.use(express.static('build'))
 app.use(cors())
@@ -45,9 +46,16 @@ let names = [
     }
 ]
 
+/*
 app.get('/api/persons', (req, res) => {
   res.json(names)
 })
+*/
+app.get('/api/persons', (request, response) => {
+    Name.find({}).then(notes => {
+        response.json(notes.map(note => note.toJSON()))
+      });
+});
 
 app.get('/info', (req, res) => {
   res.send(
@@ -97,15 +105,17 @@ app.post('/api/persons', (request, response) => {
 		}
   })
 
-  const name = {
+  const name = new Name({
     name: body.name,
     number: body.number,
     id: generateId()
-  }
+  })
 
-  names = names.concat(name)
-
-  response.json(name)
+  name.save().then(savedName => {
+    response.json(savedName.toJSON())
+  })
+  //names = names.concat(name)
+  //response.json(name)
 })
 
 const unknownEndpoint = (request, response) => {
@@ -114,7 +124,6 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint)
 
-//const PORT = 3001
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
