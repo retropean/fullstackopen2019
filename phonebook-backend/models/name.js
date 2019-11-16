@@ -1,5 +1,6 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
+var uniqueValidator = require('mongoose-unique-validator');
 
 const url = process.env.MONGODB_URI
 
@@ -12,14 +13,24 @@ mongoose.connect(url, { useNewUrlParser: true })
   })
 
 const nameSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minlength: 3,
+    unique: true,
+    required: true  },  
+  number: {
+    type: String,
+    minlength: 8,
+    unique: true,
+    required: true  },
   id: Number,
 })
 
+nameSchema.plugin(uniqueValidator);
+
 nameSchema.set('toJSON', {
   transform: (document, returnedObject) => {
-    //returnedObject.id = returnedObject._id.toString()
+    returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
   }

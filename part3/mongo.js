@@ -1,3 +1,5 @@
+//Execute with node mongo.js [password]
+
 const mongoose = require('mongoose')
 var constants = require('./db_pass')
 
@@ -20,6 +22,7 @@ const noteSchema = new mongoose.Schema({
 
 const Note = mongoose.model('Note', noteSchema)
 
+// Adding a new note
 /*
 const note = new Note({
   content: 'Third note is third',

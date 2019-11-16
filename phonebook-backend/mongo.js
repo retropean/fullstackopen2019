@@ -13,7 +13,7 @@ const nameSchema = new mongoose.Schema({
 
 const Name = mongoose.model('Name', nameSchema)
 
-if(process.argv.length < 3)
+if(process.argv.length <= 3)
 {
       console.log('Phonebook:')
       Name.find({}).then(result => {
@@ -27,13 +27,13 @@ if(process.argv.length < 3)
 else
 {
     const name = new Name({
-      name: process.argv[2],
-      number: process.argv[3]
+      name: process.argv[3],
+      number: process.argv[4]
       //id: 1
     })
 
     name.save().then(response => {
-        console.log('entry saved!')
+        console.log('added ' + process.argv[3] + ' number ' + process.argv[4] + ' to the phonebook.')
         mongoose.connection.close()
     })
 }

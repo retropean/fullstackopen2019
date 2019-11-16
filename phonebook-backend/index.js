@@ -9,19 +9,14 @@ app.use(express.static('build'))
 app.use(cors())
 app.use(bodyParser.json())
 
-/*
-app.use(morgan(
- function (tokens, req, res) {
-  return [
-	tokens.method(req, res),
-	tokens.url(req, res),
-	tokens.status(req, res),
-	tokens.res(req, res, 'content-length'), '-',
-	tokens['response-time'](req, res), 'ms',
-	JSON.stringify(req.body)
-  ].join(' ')
- }))
-*/
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+app.use(requestLogger)
 
 let names = [
 	{
@@ -46,11 +41,6 @@ let names = [
     }
 ]
 
-/*
-app.get('/api/persons', (req, res) => {
-  res.json(names)
-})
-*/
 app.get('/api/persons', (request, response) => {
     Name.find({}).then(notes => {
         response.json(notes.map(note => note.toJSON()))
@@ -63,6 +53,18 @@ app.get('/info', (req, res) => {
 	+Date()
   )
 })
+/*
+app.get('/api/persons/:id', (request, response) => {
+  names.findById(request.params.id)
+    .then(note => {
+      response.json(note.toJSON())
+    })
+    .catch(error => {
+        console.log(error)
+        response.status(400).send({ error: 'malformatted id' })
+    })
+})
+*/
 
 app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
@@ -73,7 +75,6 @@ app.get('/api/persons/:id', (request, response) => {
     response.status(404).end()
   }
 })
-
 app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   names = names.filter(p => p.id !== id)
@@ -88,7 +89,7 @@ const generateId = () => {
   return maxId + 1
 }
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
   //return 400 bad request if content missing
   if (!body.name || !body.number) {
@@ -111,11 +112,20 @@ app.post('/api/persons', (request, response) => {
     id: generateId()
   })
 
-  name.save().then(savedName => {
-    response.json(savedName.toJSON())
-  })
-  //names = names.concat(name)
-  //response.json(name)
+  name
+    .save()
+    .then(savedName => savedName.toJSON())
+    .then(savedAndFormattedName => {
+      response.json(savedAndFormattedName)
+    })
+    .catch(error => next(error)) 
+/*    
+    .catch(error => {
+      console.log(error);
+
+      response.status(400).end()
+    })  
+*/
 })
 
 const unknownEndpoint = (request, response) => {
@@ -123,6 +133,19 @@ const unknownEndpoint = (request, response) => {
 }
 
 app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError' && error.kind === 'ObjectId') {
+        return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message })
+  }
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {

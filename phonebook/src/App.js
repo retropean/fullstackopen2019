@@ -33,6 +33,13 @@ const App = () => {
 			.then(returnedName => {
 			setPersons(persons.concat(returnedName))
 			})
+/*            
+            .catch(error => {
+              // this is the way to access the error message
+              console.log(error.response.data)
+              setStatusMessage(error.response.data.error)
+            })
+*/
 		  setStatusMessage(
 			`Added ` + newName
 			)
@@ -40,7 +47,7 @@ const App = () => {
 			  setStatusMessage(null)
 		  }, 5000)
       }
-	  else if(nameDupe===false && numDupe ===true)
+      else if(nameDupe===false && numDupe ===true)
 	  {
 		if( window.confirm(newName + 'is already added to the phonebook, would you like to replace the old number with a new one?'))
 		{
