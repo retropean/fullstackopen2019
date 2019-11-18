@@ -18,80 +18,46 @@ const requestLogger = (request, response, next) => {
 }
 app.use(requestLogger)
 
-let names = [
-	{
-      name: "Ada Lovelace",
-      number: "39-44-5323523",
-      id: 1
-    },
-    {
-      name: "Eric Randall",
-      number: "571-888-6666",
-      id: 2
-    },
-    {
-      name: "Jeff Smith",
-      number: "703-777-4444",
-      id: 3
-    },
-    {
-      name: "Alex Norris",
-      number: "44-22-2222",
-      id: 4
-    }
-]
-
 app.get('/api/persons', (request, response) => {
-    Name.find({}).then(notes => {
-        response.json(notes.map(note => note.toJSON()))
+    Name.find({}).then(persons => {
+        response.json(persons.map(person => person.toJSON()))
       });
 });
 
-app.get('/info', (req, res) => {
-  res.send(
-	'<p>Phonebook has info for ' + names.length + ' people.</p>'
-	+Date()
-  )
-})
-/*
-app.get('/api/persons/:id', (request, response) => {
-  names.findById(request.params.id)
-    .then(note => {
-      response.json(note.toJSON())
-    })
-    .catch(error => {
-        console.log(error)
-        response.status(400).send({ error: 'malformatted id' })
-    })
-})
-*/
-
-app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = names.find(p => p.id === id)
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
-})
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  names = names.filter(p => p.id !== id)
-  console.log('deleting '+ id)
-  response.status(204).end()
+app.get('/info', (request, response) => {
+    Name.find({})
+    .then(persons => {
+        response.send(
+        	'<p>Phonebook has info for ' + persons.length + ' people. </p>'
+    	    +Date()
+        )
+        console.log('There are ' + persons.length + ' people in the database. Printing.')
+    });
 })
 
-const generateId = () => {
-  const maxId = names.length > 0
-    ? Math.max(...names.map(n => n.id))
-    : 0
-  return maxId + 1
-}
+app.get('/api/persons/:id', (request, response, next) => {
+    Name.findById(request.params.id)
+        .then(note => {
+          if (note) {          
+            response.json(note.toJSON())
+          } 
+          else {
+            response.status(404).end()
+          }
+        })
+    .catch(error => next(error))
+})
+
+app.delete('/api/persons/:id', (request, response, next) => {
+    Name.findByIdAndRemove(request.params.id)
+        .then(result => {
+          response.status(204).end()
+        })
+        .catch(error => next(error))
+})
 
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
-  //return 400 bad request if content missing
   if (!body.name || !body.number) {
     return response.status(400).json({ 
       error: 'content missing' 
@@ -105,28 +71,23 @@ app.post('/api/persons', (request, response, next) => {
 			})
 		}
   })
-
   const name = new Name({
     name: body.name,
-    number: body.number,
-    id: generateId()
+    number: body.number
+    //id: generateId()
   })
 
   name
     .save()
     .then(savedName => savedName.toJSON())
     .then(savedAndFormattedName => {
-      response.json(savedAndFormattedName)
+        console.log('Name function savedAndformattedName: ' + savedAndFormattedName)
+        response.json(savedAndFormattedName)
     })
     .catch(error => next(error)) 
-/*    
-    .catch(error => {
-      console.log(error);
-
-      response.status(400).end()
-    })  
-*/
 })
+
+///////////////////////////////////////////////////////////
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })

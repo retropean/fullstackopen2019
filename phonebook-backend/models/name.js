@@ -4,6 +4,8 @@ var uniqueValidator = require('mongoose-unique-validator');
 
 const url = process.env.MONGODB_URI
 
+console.log('connecting to', url)
+
 mongoose.connect(url, { useNewUrlParser: true })
   .then(result => {
         console.log('connected to MongoDB')  
@@ -23,7 +25,9 @@ const nameSchema = new mongoose.Schema({
     minlength: 8,
     unique: true,
     required: true  },
-  id: Number,
+  id: {
+    type: Number
+  }
 })
 
 nameSchema.plugin(uniqueValidator);
