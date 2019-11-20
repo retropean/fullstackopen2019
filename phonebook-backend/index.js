@@ -63,14 +63,14 @@ app.post('/api/persons', (request, response, next) => {
       error: 'content missing' 
     })
   }
-  names.forEach(function(item, index, array) {
+/*  names.forEach(function(item, index, array) {
 	if( item.name === body.name)
 		{
 			return response.status(400).json({ 
 				error: 'name must be unique' 
 			})
 		}
-  })
+  })*/
   const name = new Name({
     name: body.name,
     number: body.number
