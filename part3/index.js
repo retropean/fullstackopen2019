@@ -1,3 +1,14 @@
+const app = require('./app') // the actual Express app
+const http = require('http')
+const config = require('./utils/config')
+
+const server = http.createServer(app)
+
+server.listen(config.PORT, () => {
+  console.log(`Server running on port ${config.PORT}`)
+})
+
+/*
 require('dotenv').config()
 const http = require('http')
 const express = require('express')
@@ -68,6 +79,8 @@ app.get('/api/notes/:id', (request, response, next) => {
     //pass on error to error handler middleware
     .catch(error => next(error))
 })
+/*
+/*
 
 app.delete('/api/notes/:id', (request, response, next) => {
   Note.findByIdAndRemove(request.params.id)
@@ -135,3 +148,4 @@ const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
+*/
